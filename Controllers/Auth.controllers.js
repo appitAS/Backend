@@ -5,7 +5,7 @@ export const registerAdmin = async (req, res) => {
   try {
     const { name, email } = req.body;
 
-    console.log(req.body)
+    console.log(req.body);
 
     const existingUser = await RegisterModel.findOne({ email });
 
@@ -18,20 +18,16 @@ export const registerAdmin = async (req, res) => {
     const newUser = new RegisterModel({ name, email });
 
     await newUser.save();
-    res
-      .status(201)
-      .json({
-        Status: "success",
-        message: "Account created successfully.",
-        data: newUser,
-      });
+    res.status(201).json({
+      Status: "success",
+      message: "Account created successfully.",
+      data: newUser,
+    });
   } catch (err) {
-    res
-      .status(500)
-      .json({
-        status: "failed",
-        message: "Account can't be created. Please try again later.",
-      });
+    res.status(500).json({
+      status: "failed",
+      message: "Account can't be created. Please try again later.",
+    });
   }
 };
 
@@ -43,13 +39,11 @@ export const register = async (req, res) => {
     const existingUser = await RegisterModel.findOne({ email });
 
     if (existingUser) {
-      return res
-        .status(200)
-        .json({
-          status: "success",
-          message: "Login successfully.",
-          data: existingUser,
-        });
+      return res.status(200).json({
+        status: "success",
+        message: "Login successfully.",
+        data: existingUser,
+      });
     } else {
       return res
         .status(404)
@@ -74,21 +68,16 @@ export const login = async (req, res) => {
         .json({ status: "failure", message: "Please use registered email." });
     }
 
-   
-    res
-      .status(200)
-      .json({
-        status: "success",
-        message: "Login successfully.",
-        existingUser,
-      });
+    res.status(200).json({
+      status: "success",
+      message: "Login successfully.",
+      existingUser,
+    });
   } catch (err) {
-    res
-      .status(500)
-      .json({
-        status: "failure",
-        message:
-          "User cannot be authenticated at this time. Please try again later.",
-      });
+    res.status(500).json({
+      status: "failure",
+      message:
+        "User cannot be authenticated at this time. Please try again later.",
+    });
   }
 };
