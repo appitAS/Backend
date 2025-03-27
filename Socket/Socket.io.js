@@ -11,7 +11,7 @@ let saveDataFlag = false;
 
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5173"],
+    origin: ["https://appit-time-tracker-front-end-admin-sides.vercel.app/createuser"],
     methods: ["GET", "POST"],
     credentials: true, // ✅ Needed if frontend uses withCredentials
   },
@@ -64,6 +64,5 @@ setInterval(async () => {  // ✅ Use async function
     }
   }
 }, 30 * 60 * 1000); // ✅ 30 minutes (1800000 milliseconds)
-
 
 export { server ,app };
