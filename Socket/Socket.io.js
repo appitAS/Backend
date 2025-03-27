@@ -11,10 +11,11 @@ let saveDataFlag = false;
 
 const io = new Server(server, {
   cors: {
-    origin: "*", // Allow all origins (modify for security)
+    origin: ["http://localhost:5173/"],
+    methods: ["GET", "POST"],
+    credentials: true, // ✅ Needed if frontend uses withCredentials
   },
 });
-
 
 io.on("connection", (socket) => {
   
