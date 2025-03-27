@@ -15,6 +15,7 @@ const io = new Server(server, {
   },
 });
 
+
 io.on("connection", (socket) => {
   
   // Listen for timer updates from the app
@@ -50,4 +51,4 @@ cron.schedule("0 20 * * *", async () => {
   }
 });
 
-export { server };
+export { server ,app };
