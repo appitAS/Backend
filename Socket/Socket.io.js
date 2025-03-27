@@ -11,7 +11,7 @@ let saveDataFlag = false;
 
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5173"],
+    origin: ["http://localhost:5173", "http://localhost:8000", "https://backend.conferencemeet.online"],
     methods: ["GET", "POST"],
     credentials: true, // ✅ Needed if frontend uses withCredentials
   },
@@ -23,6 +23,7 @@ io.on("connection", (socket) => {
   socket.on("timeSheet", (data) => {
     if (data && data.length !== 0){
     TimeData = data;
+    console.log(data)
     io.emit("gettimerUpdate", data);
     }
   });

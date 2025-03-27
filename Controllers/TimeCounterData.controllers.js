@@ -9,6 +9,7 @@ export const TimeTrackingofUser = async (data) => {
     // Ensure data is an array and has at least one entry
     if (!Array.isArray(data) || data.length === 0) {
       throw new Error("Invalid data format. Expected a non-empty array.");
+      console.log(data)
     }
 
     let {
