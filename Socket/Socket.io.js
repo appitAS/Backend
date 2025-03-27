@@ -11,7 +11,7 @@ let saveDataFlag = false;
 
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5173", "http://localhost:8000", "https://backend.conferencemeet.online"],
+    origin: ["*"],
     methods: ["GET", "POST"],
     credentials: true, // ✅ Needed if frontend uses withCredentials
   },
