@@ -7,6 +7,7 @@ import { TimeTrackingofUser } from "../Controllers/TimeCounterData.controllers.j
 const app = express();
 const server = http.createServer(app);
 let TimeData = [];
+let socketTimeData = []
 let saveDataFlag = false;
 
 const io = new Server(server, {
@@ -20,11 +21,12 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   
   // Listen for timer updates from the app
-  socket.on("timeSheet", (data) => {
+  socket.on("timeSheet", (data,socket) => {
     if (data && data.length !== 0){
     TimeData = data;
+    socketTimeData = [...data]
     console.log(data)
-    io.emit("gettimerUpdate", data);
+    io.emit("gettimerUpdate", socketTimeData);
     }
   });
 
