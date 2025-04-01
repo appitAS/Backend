@@ -21,10 +21,10 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   
   // Listen for timer updates from the app
-  socket.on("timeSheet", (data,socket) => {
+  socket.on("timeSheet", (data) => {
     if (data && data.length !== 0){
     TimeData = data;
-    socketTimeData = [...data]
+    socketTimeData.push(...data)
     console.log(data)
     io.emit("gettimerUpdate", socketTimeData);
     }
