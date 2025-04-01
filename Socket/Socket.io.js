@@ -11,7 +11,7 @@ let saveDataFlag = false;
 
 const io = new Server(server, {
   cors: {
-    origin: ["https://appit-time-tracker-front-end-admin-sides.vercel.app/createuser"],
+    origin: ["https://frontend.conferencemeet.online/"],
     methods: ["GET", "POST"],
     credentials: true, // ✅ Needed if frontend uses withCredentials
   },

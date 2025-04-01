@@ -7,7 +7,7 @@ import { server, app } from "./Socket/Socket.io.js"; // Import WebSocket server
 // Import routes
 import authRoutes from "./routes/authRoutes.js";
 // import TimeTrackingofUser from "./routes/TimeCounter.routes.js";
-// import EmployeeTimeSheet from "./routes/TimeSheets.routes.js";
+import EmployeeTimeSheet from "./routes/TimeSheets.routes.js";
 
 dotenv.config();
 
@@ -32,7 +32,7 @@ app.use(cors());
 // Use routes
 app.use("/api/auth", authRoutes);
 // app.use("/api/employee", TimeTrackingofUser);
-// app.use("/api/timeSheet", EmployeeTimeSheet);
+app.use("/api/timeSheet", EmployeeTimeSheet);
 
 server.listen(port, "localhost", () => {
   console.log(`Server is listening on ${port}`);
