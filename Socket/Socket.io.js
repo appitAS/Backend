@@ -26,7 +26,7 @@ io.on("connection", (socket) => {
     TimeData = data;
     socketTimeData.push(...data)
     console.log(data)
-    io.emit("gettimerUpdate", socketTimeData);
+    // io.emit("gettimerUpdate", socketTimeData);
     }
   });
 
@@ -44,27 +44,27 @@ io.on("connection", (socket) => {
 });
 
 // Schedule data saving every day at 8 PM
-// cron.schedule("0 20 * * *", async () => {
-//   if (TimeData.length !== 0) {
-//     try {
-//       await TimeTrackingofUser(TimeData);
-//       console.log("✅ Data saved at 8 PM");
-//     } catch (error) {
-//       console.error("❌ Error in scheduled data saving:", error);
-//     }
-//   }
-// });
-
-setInterval(async () => {  // ✅ Use async function
+cron.schedule("0 20 * * *", async () => {
   if (TimeData.length !== 0) {
     try {
       await TimeTrackingofUser(TimeData);
-      console.log("✅ Data saved every 30 minutes");
-      TimeData = []; // ✅ Clear data after saving
+      console.log("✅ Data saved at 8 PM");
     } catch (error) {
       console.error("❌ Error in scheduled data saving:", error);
     }
   }
-}, 30 * 60 * 1000); // ✅ 30 minutes (1800000 milliseconds)
+});
 
-export { server ,app };
+// setInterval(async () => {  // ✅ Use async function
+//   if (TimeData.length !== 0) {
+//     try {
+//       await TimeTrackingofUser(TimeData);
+//       console.log("✅ Data saved every 30 minutes");
+//       TimeData = []; // ✅ Clear data after saving
+//     } catch (error) {
+//       console.error("❌ Error in scheduled data saving:", error);
+//     }
+//   }
+// }, 30 * 60 * 1000); // ✅ 30 minutes (1800000 milliseconds)
+
+ export { server ,app };

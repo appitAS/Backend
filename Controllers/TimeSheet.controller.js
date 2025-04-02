@@ -13,6 +13,7 @@ function formatTime(ms) {
 export const getTimesheet = async (req, res) => {
   try {
     const { name, email, date, month, year } = req.body;
+    console.log(name, email, date, month, year);
     let query = {};
 
     const monthNames = {
@@ -98,8 +99,12 @@ export const getTimesheet = async (req, res) => {
       });
 
       response.employees = Object.keys(employeeRecords).map((emp) => {
-        let absentDays = allDays.filter(day => !employeeRecords[emp].presentDays.has(day));
-        let totalAbsent = absentDays.length; // Count total absent days
+        let absentDays = allDays.filter(day => {
+          let dayOfWeek = moment(day, "DD-MM-YYYY").day();
+          return dayOfWeek !== 0 && dayOfWeek !== 6 && !employeeRecords[emp].presentDays.has(day);
+        });
+
+        let totalAbsent = absentDays.length; // Count total absent days (excluding weekends)
 
         return {
           name: emp,
