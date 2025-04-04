@@ -30,6 +30,7 @@ io.on("connection", (socket) => {
 
   // Step 1: Store user email when they send time data
   socket.on("timeSheet", async (data) => {
+    console.log("New client connected:",data);
     if (data && data.length !== 0) {
       for (const user of data) {
         if (user.email) {
@@ -79,6 +80,7 @@ setInterval(async () => {
       if (userData) timeData.push(JSON.parse(userData));
     }
     io.emit("adminTimeUpdate", timeData);
+    console.log("redis data=>",timeData)
   } catch (error) {
     console.error("Error retrieving data from Redis:", error);
   }
