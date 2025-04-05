@@ -72,11 +72,12 @@ export const TimeTrackingofUser = async (data) => {
           results.push(existingEntry);
           continue; // Move to next user
         }
+        console.log(existingEntry.WorkTime + WorkTime, "existingEntry.WorkTime + WorkTime");
 
         const updateData = {
           $set: {
             name,
-            WorkTime,
+            WorkTime: existingEntry.WorkTime + WorkTime,
             BreakTime,
             totalIdleTime,
           },
