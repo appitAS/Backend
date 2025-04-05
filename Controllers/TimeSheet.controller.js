@@ -13,7 +13,7 @@ function formatTime(ms) {
 export const getTimesheet = async (req, res) => {
   try {
     const { name, email, date, month, year } = req.body;
-    console.log(name, email, date, month, year);
+    // console.log(name, email, date, month, year);
     let query = {};
 
     const monthNames = {

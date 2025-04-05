@@ -4,7 +4,7 @@ import http from "http";
 import cron from "node-cron";
 import Redis from "ioredis";
 import { TimeTrackingofUser } from "../Controllers/TimeCounterData.controllers.js";
-import dotenv from "dotenv"; 
+import dotenv from "dotenv";
 const app = express();
 const server = http.createServer(app);
 
@@ -26,11 +26,11 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  console.log("New client connected:", socket.id);
+  // console.log("New client connected:", socket.id);
 
   // Step 1: Store user email when they send time data
   socket.on("timeSheet", async (data) => {
-    console.log("New client connected:",data);
+    // console.log("New client connected:",data);
     if (data && data.length !== 0) {
       for (const user of data) {
         if (user.email) {
@@ -46,22 +46,22 @@ io.on("connection", (socket) => {
 
   // Step 3: Identify the specific user when they disconnect
   socket.on("disconnect", async () => {
-    console.log(`Client disconnected: ${socket.id}`);
+    // console.log(`Client disconnected: ${socket.id}`);
 
     if (socket.userEmail) {
-      console.log(`User disconnected: ${socket.userEmail}`);
+      // console.log(`User disconnected: ${socket.userEmail}`);
 
       try {
         const userData = await redis.get(`time_tracking:${socket.userEmail}`);
         if (userData) {
           const parsedData = JSON.parse(userData);
-          
+
           // Save only the disconnected user's data to MongoDB
           await TimeTrackingofUser([parsedData]);
 
           // Remove data after saving
           await redis.del(`time_tracking:${socket.userEmail}`);
-          console.log(`Saved and removed data for ${socket.userEmail}`);
+          // console.log(`Saved and removed data for ${socket.userEmail}`);
         }
       } catch (error) {
         console.error("Error saving disconnected user's data:", error);
@@ -80,7 +80,7 @@ setInterval(async () => {
       if (userData) timeData.push(JSON.parse(userData));
     }
     io.emit("adminTimeUpdate", timeData);
-    console.log("redis data=>",timeData)
+    // console.log("redis data=>",timeData)
   } catch (error) {
     console.error("Error retrieving data from Redis:", error);
   }
@@ -97,7 +97,7 @@ cron.schedule("0 20 * * *", async () => {
     }
     if (timeData.length > 0) {
       await TimeTrackingofUser(timeData);
-      console.log("Data saved to MongoDB successfully");
+      // console.log("Data saved to MongoDB successfully");
     }
   } catch (error) {
     console.error("Error saving Redis data to MongoDB:", error);
@@ -110,7 +110,7 @@ cron.schedule("0 0 * * *", async () => {
     const keys = await redis.keys("time_tracking:*");
     if (keys.length > 0) {
       await redis.del(...keys);
-      console.log("Old Redis data cleared at midnight");
+      // console.log("Old Redis data cleared at midnight");
     }
   } catch (error) {
     console.error("Error clearing Redis data:", error);

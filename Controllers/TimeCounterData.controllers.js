@@ -2,9 +2,21 @@ import TimeTrackingModal from "../Models/TimeCounter.model.js";
 import RegisterModel from "../Models/Register.model.js";
 
 // Time tracking function for users
+export const tester = async (req, res) => {
+  console.log("tester", req.body.data);
+
+  await TimeTrackingofUser(req.body.data)
+  return res.status(200).json({
+    status: "success",
+    message: "Data received successfully.",
+  });
+}
 export const TimeTrackingofUser = async (data) => {
+  console.log(data, "data");
+
   try {
     // Ensure data is an array and has at least one entry
+
     if (!Array.isArray(data) || data.length === 0) {
       throw new Error("Invalid data format. Expected a non-empty array.");
     }
@@ -45,7 +57,11 @@ export const TimeTrackingofUser = async (data) => {
       }
 
       // Check if an entry for the same email and date exists
+      console.log(email, date, "email, date");
+
       const existingEntry = await TimeTrackingModal.findOne({ email, date });
+      console.log("existingEntry", existingEntry);
+
 
       if (existingEntry) {
         // Remove duplicate loginAt values
@@ -57,19 +73,30 @@ export const TimeTrackingofUser = async (data) => {
           continue; // Move to next user
         }
 
-        // Update only if values change
+        const updateData = {
+          $set: {
+            name,
+            WorkTime,
+            BreakTime,
+            totalIdleTime,
+          },
+          $push: {
+            idleMsg: { $each: idleMsg },
+            loginAt: { $each: uniqueLoginAt },
+            logOutAt: { $each: logOutAt },
+          },
+        };
+
         const updatedEntry = await TimeTrackingModal.findOneAndUpdate(
           { email, date },
-          {
-            $set: { name, WorkTime, BreakTime, totalIdleTime }, 
-            $push: {
-              idleMsg: { $each: idleMsg },
-              loginAt: { $each: uniqueLoginAt }, // Only unique login times
-              logOutAt: { $each: logOutAt },
-            },
-          },
+          updateData,
           { new: true }
         );
+        console.log(updatedEntry, "updatedEntry");
+
+        if (!updatedEntry) {
+          console.warn(`Update failed for ${email} on ${date}`);
+        }
 
         results.push(updatedEntry);
       } else {
@@ -87,6 +114,7 @@ export const TimeTrackingofUser = async (data) => {
         });
 
         const savedUser = await newUser.save();
+        console.log(savedUser, "savedUser");
         results.push(savedUser);
       }
     }
