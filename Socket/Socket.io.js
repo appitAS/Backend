@@ -4,7 +4,7 @@ import http from "http";
 import cron from "node-cron";
 import Redis from "ioredis";
 import { TimeTrackingofUser } from "../Controllers/TimeCounterData.controllers.js";
-import dotenv from "dotenv"; 
+import dotenv from "dotenv";
 const app = express();
 const server = http.createServer(app);
 
@@ -55,7 +55,7 @@ io.on("connection", (socket) => {
         const userData = await redis.get(`time_tracking:${socket.userEmail}`);
         if (userData) {
           const parsedData = JSON.parse(userData);
-          
+
           // Save only the disconnected user's data to MongoDB
           await TimeTrackingofUser([parsedData]);
 
