@@ -24,6 +24,7 @@ export const TimeTrackingofUser = async (data) => {
         logOutAt,
       } = user;
 
+
       // Validate required fields
       if (!email || !date || WorkTime === undefined || !Array.isArray(loginAt)) {
         throw new Error(`Missing or invalid fields for user: ${email || "unknown"}`);
@@ -86,6 +87,7 @@ export const TimeTrackingofUser = async (data) => {
           logOutAt,
         });
 
+
         const savedUser = await newUser.save();
         results.push(savedUser);
       }
@@ -98,3 +100,5 @@ export const TimeTrackingofUser = async (data) => {
     throw new Error(`Your Work Time was not saved. Error: ${err.message}`);
   }
 };
+
+
