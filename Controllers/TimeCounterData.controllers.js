@@ -1,18 +1,19 @@
 import TimeTrackingModal from "../Models/TimeCounter.model.js";
 import RegisterModel from "../Models/Register.model.js";
 
-// Time tracking function for users
+// testing endpoints
 export const tester = async (req, res) => {
-  console.log("tester", req.body.data);
+  console.log("tester", req.body.data); 
 
-  await TimeTrackingofUser(req.body.data)
+  await TimeTrackingofUser(req.body.data);
   return res.status(200).json({
     status: "success",
     message: "Data received successfully.",
   });
-}
+};
+// Time tracking function for users
 export const TimeTrackingofUser = async (data) => {
-  console.log(data, "data");
+  // console.log(data, "data"); // fo testing
 
   try {
     // Ensure data is an array and has at least one entry
@@ -36,10 +37,16 @@ export const TimeTrackingofUser = async (data) => {
         logOutAt,
       } = user;
 
-
       // Validate required fields
-      if (!email || !date || WorkTime === undefined || !Array.isArray(loginAt)) {
-        throw new Error(`Missing or invalid fields for user: ${email || "unknown"}`);
+      if (
+        !email ||
+        !date ||
+        WorkTime === undefined ||
+        !Array.isArray(loginAt)
+      ) {
+        throw new Error(
+          `Missing or invalid fields for user: ${email || "unknown"}`
+        );
       }
 
       // Set default values if undefined or empty
@@ -58,22 +65,28 @@ export const TimeTrackingofUser = async (data) => {
       }
 
       // Check if an entry for the same email and date exists
-      console.log(email, date, "email, date");
+      // console.log(email, date, "email, date"); // for testing
 
       const existingEntry = await TimeTrackingModal.findOne({ email, date });
-      console.log("existingEntry", existingEntry);
-
+      // console.log("existingEntry", existingEntry); // fro testing
 
       if (existingEntry) {
         // Remove duplicate loginAt values
-        const uniqueLoginAt = loginAt.filter((time) => !existingEntry.loginAt.includes(time));
+        const uniqueLoginAt = loginAt.filter(
+          (time) => !existingEntry.loginAt.includes(time)
+        );
 
         if (uniqueLoginAt.length === 0) {
-          console.log(`No new login times detected for ${email}. Work time already updated.`);
+          // console.log(
+          //   `No new login times detected for ${email}. Work time already updated.`
+          // );
           results.push(existingEntry);
           continue; // Move to next user
         }
-        console.log(existingEntry.WorkTime + WorkTime, "existingEntry.WorkTime + WorkTime");
+        // console.log(
+        //   existingEntry.WorkTime + WorkTime,
+        //   "existingEntry.WorkTime + WorkTime"
+        // );
 
         const updateData = {
           $set: {
@@ -94,7 +107,7 @@ export const TimeTrackingofUser = async (data) => {
           updateData,
           { new: true }
         );
-        console.log(updatedEntry, "updatedEntry");
+        // console.log(updatedEntry, "updatedEntry");
 
         if (!updatedEntry) {
           console.warn(`Update failed for ${email} on ${date}`);
@@ -115,19 +128,15 @@ export const TimeTrackingofUser = async (data) => {
           logOutAt,
         });
 
-
         const savedUser = await newUser.save();
-        console.log(savedUser, "savedUser");
+        // console.log(savedUser, "savedUser");
         results.push(savedUser);
       }
     }
 
     return results; // ✅ Return all processed user data
-
   } catch (err) {
     console.error("Error Saving Work Time:", err);
     throw new Error(`Your Work Time was not saved. Error: ${err.message}`);
   }
 };
-
-
