@@ -3,7 +3,7 @@ import RegisterModel from "../Models/Register.model.js";
 
 // testing endpoints
 export const tester = async (req, res) => {
-  console.log("tester", req.body.data); 
+  console.log("tester", req.body.data);
 
   await TimeTrackingofUser(req.body.data);
   return res.status(200).json({
@@ -45,7 +45,13 @@ export const TimeTrackingofUser = async (data) => {
         !Array.isArray(loginAt)
       ) {
         throw new Error(
-          `Missing or invalid fields for user: ${email || "unknown"}`
+          `Missing or invalid fields for user:\n` +
+            `Email: ${email || "unknown"}\n` +
+            `Date: ${date || "unknown"}\n` +
+            `WorkTime: ${WorkTime ?? "unknown"}\n` +
+            `Login Time(s): ${
+              Array.isArray(loginAt) ? loginAt.join(", ") : "invalid or missing"
+            }`
         );
       }
 
