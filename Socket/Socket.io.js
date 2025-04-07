@@ -30,13 +30,12 @@ io.on("connection", (socket) => {
 
   // Step 1: Store user email when they send time data
   socket.on("timeSheet", async (data) => {
-    // console.log("New client connected:",data);
+    console.log("user=>>",data);
     if (data && data.length !== 0) {
       for (const user of data) {
         if (user.email) {
           // Step 2: Attach email to socket object
           socket.userEmail = user.email;
-
           // Store user data in Redis
           await redis.set(`time_tracking:${user.email}`, JSON.stringify(user));
         }
