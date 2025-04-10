@@ -1,7 +1,6 @@
 import TimeTrackingModal from "../Models/TimeCounter.model.js";
 import moment from "moment";
 
-// Helper function to format time properly (ms -> HH:MM:SS)
 function formatTime(ms) {
   let totalSeconds = Math.floor(ms / 1000);
   let hours = Math.floor(totalSeconds / 3600);
@@ -13,7 +12,6 @@ function formatTime(ms) {
 export const getTimesheet = async (req, res) => {
   try {
     const { name, email, date, month, year } = req.body;
-    // console.log(name, email, date, month, year);
     let query = {};
 
     const monthNames = {
@@ -21,16 +19,13 @@ export const getTimesheet = async (req, res) => {
       Jul: "07", Aug: "08", Sep: "09", Oct: "10", Nov: "11", Dec: "12",
     };
 
-    // Filter by date
     if (date) {
       const formattedDate = moment(date, ["DD-MM-YYYY", "YYYY-MM-DD", "MM/DD/YYYY"], true).format("DD-MM-YYYY");
       query.date = formattedDate;
     }
 
-    // Filter by month and year
     if (month && year) {
       const monthNumber = monthNames[month];
-
       if (!monthNumber) {
         return res.status(400).json({ status: "failure", message: "Invalid month format. Use 'Jan', 'Feb', etc." });
       }
@@ -46,14 +41,11 @@ export const getTimesheet = async (req, res) => {
       };
     }
 
-    // Filter by name and/or email
     if (name || email) {
       query.$or = [];
       if (name) query.$or.push({ name });
       if (email) query.$or.push({ email });
     }
-
-    console.log("MongoDB Query:", JSON.stringify(query, null, 2));
 
     const data = await TimeTrackingModal.find(query);
 
@@ -65,32 +57,30 @@ export const getTimesheet = async (req, res) => {
       });
     }
 
-    // **Processing Attendance Data**
-    let employeeRecords = {}; // To store data grouped by employee
+    let employeeRecords = {};
 
     data.forEach((entry) => {
       const { name, date, WorkTime } = entry;
 
       if (!employeeRecords[name]) {
         employeeRecords[name] = {
-          totalPresent: 0,
           presentDays: new Set(),
           totalWorkTime: 0,
         };
       }
 
-      employeeRecords[name].totalPresent += 1;
-      employeeRecords[name].presentDays.add(date);
+      employeeRecords[name].presentDays.add(date); // only unique dates
       employeeRecords[name].totalWorkTime += WorkTime || 0;
     });
 
     const response = {};
 
-    // If filtering by month, calculate absent days & weekends
     if (month && year) {
-      const totalDaysInMonth = moment(`${year}-${monthNames[month]}-01`, "YYYY-MM-DD").daysInMonth();
+      const monthNumber = monthNames[month];
+      const totalDaysInMonth = moment(`${year}-${monthNumber}-01`, "YYYY-MM-DD").daysInMonth();
+
       let allDays = Array.from({ length: totalDaysInMonth }, (_, i) =>
-        moment(`${year}-${monthNames[month]}-${i + 1}`, "YYYY-MM-DD").format("DD-MM-YYYY")
+        moment(`${year}-${monthNumber}-${i + 1}`, "YYYY-MM-DD").format("DD-MM-YYYY")
       );
 
       let satSunHolidays = allDays.filter(day => {
@@ -98,17 +88,23 @@ export const getTimesheet = async (req, res) => {
         return dayOfWeek === 0 || dayOfWeek === 6;
       });
 
+      const today = moment().startOf("day");
+
       response.employees = Object.keys(employeeRecords).map((emp) => {
         let absentDays = allDays.filter(day => {
-          let dayOfWeek = moment(day, "DD-MM-YYYY").day();
-          return dayOfWeek !== 0 && dayOfWeek !== 6 && !employeeRecords[emp].presentDays.has(day);
+          const dayMoment = moment(day, "DD-MM-YYYY").startOf("day");
+          const isWeekend = dayMoment.day() === 0 || dayMoment.day() === 6;
+          const isFuture = dayMoment.isAfter(today);
+          const isPresent = employeeRecords[emp].presentDays.has(day);
+
+          return !isWeekend && !isFuture && !isPresent;
         });
 
-        let totalAbsent = absentDays.length; // Count total absent days (excluding weekends)
+        let totalAbsent = absentDays.length;
 
         return {
           name: emp,
-          totalPresent: employeeRecords[emp].totalPresent,
+          totalPresent: employeeRecords[emp].presentDays.size,
           presentDays: [...employeeRecords[emp].presentDays],
           absentDays,
           totalAbsent,
@@ -117,7 +113,7 @@ export const getTimesheet = async (req, res) => {
         };
       });
     } else {
-      response.data = data; // Return raw data if month is not provided
+      response.data = data;
     }
 
     return res.status(200).json({
@@ -128,3 +124,4 @@ export const getTimesheet = async (req, res) => {
     res.status(500).json({ status: "failure", message: error.message });
   }
 };
+
